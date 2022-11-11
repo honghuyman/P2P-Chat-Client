@@ -40,7 +40,6 @@ public class Chat {
     public void sendFile() {
         String ip = ((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress().toString().substring(1);
         FileTransfer.sendFile(ip, myname);
-        addSystemMessage(othername + " sent you a file");
     }
 
     public boolean start() {
