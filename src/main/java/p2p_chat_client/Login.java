@@ -1,5 +1,6 @@
 package p2p_chat_client;
 
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         initComponents();
         setTitle("P2P Chat");
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -38,6 +40,11 @@ public class Login extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
 
         jLabel1.setBackground(java.awt.Color.white);
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
@@ -45,9 +52,21 @@ public class Login extends javax.swing.JFrame {
         jLabel1.setText("P2P Chat");
         jLabel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        jTextField2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField2KeyPressed(evt);
+            }
+        });
+
         jLabel2.setText("Username");
 
         jLabel3.setText("Password");
+
+        jPasswordField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPasswordField1KeyPressed(evt);
+            }
+        });
 
         jButton1.setText("Login");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -55,11 +74,21 @@ public class Login extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
+        jButton1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jButton1KeyPressed(evt);
+            }
+        });
 
         jButton2.setText("Register");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
+            }
+        });
+        jButton2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jButton2KeyPressed(evt);
             }
         });
 
@@ -111,7 +140,6 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
         String username = jTextField2.getText();
         String pwd = new String(jPasswordField1.getPassword());
         String output = doLogin(username, pwd);
@@ -127,6 +155,31 @@ public class Login extends javax.swing.JFrame {
         String output = doRegister(username, pwd);
         JOptionPane.showMessageDialog(null, output);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jButton1ActionPerformed(null);
+    }//GEN-LAST:event_formKeyPressed
+
+    private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jButton1ActionPerformed(null);
+    }//GEN-LAST:event_jTextField2KeyPressed
+
+    private void jPasswordField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPasswordField1KeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jButton1ActionPerformed(null);
+    }//GEN-LAST:event_jPasswordField1KeyPressed
+
+    private void jButton1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jButton1ActionPerformed(null);
+    }//GEN-LAST:event_jButton1KeyPressed
+
+    private void jButton2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton2KeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER)
+            jButton1ActionPerformed(null);
+    }//GEN-LAST:event_jButton2KeyPressed
 
     /**
      * @param args the command line arguments
@@ -175,23 +228,23 @@ public class Login extends javax.swing.JFrame {
 
     public static String sendRequest(String input) {
         try {
-            Socket socket = new Socket(AUTH_SERVER, AUTH_SERVER_PORT);
-            BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            bos.write(input.getBytes());
-            bos.flush();
-            StringBuffer sb = new StringBuffer();
-            String line;
-            boolean isfirst = true;
-            while ((line = br.readLine()) != null) {
-                if (!isfirst) {
-                    sb.append('\n');
-                }
-                sb.append(line);
-                isfirst = false;
+            String output;
+            try (Socket socket = new Socket(AUTH_SERVER, AUTH_SERVER_PORT)) {
+                BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
+                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                bos.write(input.getBytes());
+                bos.flush();
+                StringBuffer sb = new StringBuffer();
+                String line;
+                boolean isfirst = true;
+                while ((line = br.readLine()) != null) {
+                    if (!isfirst) {
+                        sb.append('\n');
+                    }
+                    sb.append(line);
+                    isfirst = false;
+                }   output = sb.toString();
             }
-            String output = sb.toString();
-            socket.close();
             return output;
         } catch (IOException ex) {
             System.err.println("Connection Refused");
@@ -203,13 +256,15 @@ public class Login extends javax.swing.JFrame {
 
     private String doLogin(String username, String pwd) {
         String in = "Login\n" + username + "\n" + pwd + "\n";
+        if (username.isEmpty() || pwd.isEmpty()) {
+            return "Please enter Username and Password";
+        }
         String out = sendRequest(in);
         if (out == null) {
             return "Couldn't Connect to Auth Server";
         } else {
             if (out.trim().equals("DONE")) {
                 FriendList.startWindow(username, pwd);
-                FileTransferServer.startWindow();
                 setVisible(false);
                 dispose();
                 return null;
@@ -221,6 +276,9 @@ public class Login extends javax.swing.JFrame {
 
     private String doRegister(String username, String pwd) {
         String in = "Register\n" + username + "\n" + pwd + "\n";
+        if (username.isEmpty() || pwd.isEmpty()) {
+            return "Please enter Username and Password";
+        }
         String out = sendRequest(in);
         if (out == null) {
             return "Couldn't Connect to Auth Server";

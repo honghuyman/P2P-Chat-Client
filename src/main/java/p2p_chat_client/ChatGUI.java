@@ -4,18 +4,19 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class UI extends javax.swing.JFrame {
+public class ChatGUI extends javax.swing.JFrame {
 
-    private ChatController controller;
+    private Chat controller;
 
     /**
      * Creates new form UI
      */
-    public UI(ChatController controller, String myname, String othername) {
+    public ChatGUI(Chat controller, String myname, String othername) {
         initComponents();
         this.controller = controller;
         setTitle("P2P Chat");
-        headnames.setText(myname + " <---> " + othername);
+        setLocationRelativeTo(null);
+        headnames.setText("You are chatting with " + othername);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -23,12 +24,6 @@ public class UI extends javax.swing.JFrame {
                 dispose();
             }
         });
-    }
-
-    private void specialMsg(String msg) {
-        if (msg.equals("/file")) {
-            controller.startFileTransferClient();
-        }
     }
 
     /**
@@ -49,12 +44,6 @@ public class UI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jTextField1.setText("Hi!!");
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
-            }
-        });
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField1KeyReleased(evt);
@@ -75,7 +64,7 @@ public class UI extends javax.swing.JFrame {
         jLabel1.setText("P2P Chat");
         jLabel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel2.setText("Press 'Enter' to send message");
+        jLabel2.setText("Type \"/file\" to send a file.");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -110,18 +99,16 @@ public class UI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
-        // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             String msg = jTextField1.getText().trim();
             jTextField1.setText("");
-            controller.sendMessage(msg);
-            specialMsg(msg);
+            if (msg.equals("/file")) {
+                controller.sendFile();
+            } else {
+                controller.sendMessage(msg);
+            }
+
         }
     }//GEN-LAST:event_jTextField1KeyReleased
 
@@ -131,7 +118,7 @@ public class UI extends javax.swing.JFrame {
         jTextArea1.setCaretPosition(jTextArea1.getDocument().getLength());
     }
 
-    public static void launch(ChatController controller, String myname, String othername) {
+    public static void launch(Chat controller, String myname, String othername) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -145,27 +132,20 @@ public class UI extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChatGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChatGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChatGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ChatGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        System.out.println("Preparing to launch UI");
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-                System.out.println("Creating UI");
-                UI ui = new UI(controller, myname, othername);
-                System.out.println("Making Visible UI");
-                ui.setVisible(true);
-                controller.setUI(ui);
-                System.out.println("Lauching UI");
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            ChatGUI ui = new ChatGUI(controller, myname, othername);
+            ui.setVisible(true);
+            controller.setUI(ui);
         });
     }
 

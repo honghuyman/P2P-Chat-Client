@@ -8,7 +8,7 @@ public class FriendList extends javax.swing.JFrame {
     private final String myusername;
     private final String mypwd;
     private final ArrayList<String> ips;
-    private final P2PConnection cc;
+    private final P2P p2p;
 
     /**
      * Creates new form FriendList
@@ -17,16 +17,12 @@ public class FriendList extends javax.swing.JFrame {
         this.myusername = myusername;
         ips = new ArrayList<>();
         this.mypwd = mypwd;
-        cc = P2PConnection.start(myusername);
+        p2p = P2P.start(myusername);
         initComponents();
         setTitle("P2P Chat");
         list1.addItemListener(e -> {
             String ip = ips.get((int) e.getItem());
-//                int type = JOptionPane.showConfirmDialog(null, "Do you want to video call","Video Call", JOptionPane.YES_NO_OPTION);
-//                if(type==0)
-//                    cc.callAsVideo(ip);
-//                else
-            cc.addClient(ip);
+            p2p.addClient(ip);
         });
         updateFriendList();
     }
@@ -47,12 +43,6 @@ public class FriendList extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Friend List");
-
-        list1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                list1ActionPerformed(evt);
-            }
-        });
 
         button1.setLabel("Add Friend");
         button1.setName(""); // NOI18N
@@ -100,10 +90,6 @@ public class FriendList extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, addFriend(username));
     }//GEN-LAST:event_button1ActionPerformed
 
-    private void list1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_list1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_list1ActionPerformed
-
     public static void startWindow(String username, String pwd) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -145,6 +131,7 @@ public class FriendList extends javax.swing.JFrame {
     private String addFriend(String username) {
 
         String in = "Add Friend\n" + myusername + "\n" + mypwd + "\n" + username + "\n";
+        if (username.isEmpty()) {return "Please enter friend's username";}
         String out = Login.sendRequest(in);
         if (out == null) {
             return "Couldn't Connect to Auth Server";

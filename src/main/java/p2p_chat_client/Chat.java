@@ -9,10 +9,10 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Chat implements ChatController {
+public class Chat {
 
     private Socket socket;
-    private UI ui;
+    private ChatGUI ui;
     private BufferedReader br;
     private BufferedOutputStream bos;
     private String myname, othername;
@@ -22,21 +22,25 @@ public class Chat implements ChatController {
         this.myname = myname;
     }
 
-    @Override
     public void sendMessage(String msg) {
         ui.addMessage(msg, myname);
         try {
             bos.write((msg + "\n").getBytes());
             bos.flush();
         } catch (IOException ex) {
-            ui.addMessage("Failed to send above message", "System");
+            addSystemMessage("Failed to send above message");
             Logger.getLogger(Chat.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public void setUI(UI ui) {
+    public void setUI(ChatGUI ui) {
         this.ui = ui;
-        System.out.println("UI is init [" + (ui != null) + "]");
+    }
+
+    public void sendFile() {
+        String ip = ((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress().toString().substring(1);
+        FileTransfer.sendFile(ip, myname);
+        addSystemMessage(othername + " sent you a file");
     }
 
     public boolean start() {
@@ -48,7 +52,7 @@ public class Chat implements ChatController {
             bos.write((myname + "\n").getBytes());
             bos.flush();
             othername = br.readLine();
-            UI.launch(this, myname, othername);
+            ChatGUI.launch(this, myname, othername);
             while (ui == null) {
                 try {
                     Thread.sleep(100);
@@ -63,17 +67,10 @@ public class Chat implements ChatController {
         return false;
     }
 
-    @Override
-    public void startFileTransferClient() {
-        String ip = ((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress().toString().substring(1);
-        FileTransferClient.startWindow(ip, myname);
-    }
-
     class Reader extends Thread {
 
         @Override
         public void run() {
-            System.out.println("Reader Started");
             try {
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -83,13 +80,10 @@ public class Chat implements ChatController {
             } catch (IOException ex) {
                 addSystemMessage("Chat Ended!");
             }
-
         }
-
     }
 
     public void addSystemMessage(String msg) {
         ui.addMessage(msg, "System");
     }
-
 }

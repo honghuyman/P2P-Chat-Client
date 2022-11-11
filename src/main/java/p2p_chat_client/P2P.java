@@ -6,24 +6,30 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class P2PConnection implements Controller {
+public class P2P {
 
     private String myname;
     private Chat chat;
 
-    public P2PConnection(String myname) {
+    public P2P(String myname) {
         this.myname = myname;
     }
 
-    public static P2PConnection start(String myname) {
-        P2PConnection chat = new P2PConnection(myname);
-        Server server = new Server(chat, myname);
-        new Thread("Server") {
+    public static P2P start(String myname) {
+        P2P connection = new P2P(myname);
+        ChatServer chatServer = new ChatServer(connection, myname);
+        FileTransfer fileTransferServer = new FileTransfer();
+        new Thread("Chat Server") {
             public void run() {
-                server.start();
+                chatServer.start();
             }
         }.start();
-        return chat;
+        new Thread("File Transfer Server") {
+            public void run() {
+                fileTransferServer.startServer();
+            }
+        }.start();
+        return connection;
 
     }
 
@@ -66,7 +72,7 @@ public class P2PConnection implements Controller {
             return null;
         }
         try {
-            return new Socket(address, Server.PORT);
+            return new Socket(address, ChatServer.PORT);
         } catch (IOException ex) {
             System.err.println("Couldn't Connected");
             return null;
@@ -80,7 +86,6 @@ public class P2PConnection implements Controller {
         }
     }
 
-    @Override
     public void addChat(Socket socket, String myname) {
         chat = new Chat(socket, myname);
         chat.start();

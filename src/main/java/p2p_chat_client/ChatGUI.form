@@ -57,11 +57,7 @@
   </Layout>
   <SubComponents>
     <Component class="javax.swing.JTextField" name="jTextField1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Hi!!"/>
-      </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField1ActionPerformed"/>
         <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="jTextField1KeyReleased"/>
       </Events>
     </Component>
@@ -106,7 +102,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Press &apos;Enter&apos; to send message"/>
+        <Property name="text" type="java.lang.String" value="Type &quot;/file&quot; to send a file."/>
       </Properties>
     </Component>
   </SubComponents>
