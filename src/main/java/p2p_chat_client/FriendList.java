@@ -39,6 +39,7 @@ public class FriendList extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         list1 = new java.awt.List();
         button1 = new java.awt.Button();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,6 +53,9 @@ public class FriendList extends javax.swing.JFrame {
             }
         });
 
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText(myusername);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -62,7 +66,8 @@ public class FriendList extends javax.swing.JFrame {
                     .addComponent(list1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(155, 155, 155)
@@ -73,7 +78,9 @@ public class FriendList extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(list1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -125,13 +132,16 @@ public class FriendList extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private java.awt.Button button1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private java.awt.List list1;
     // End of variables declaration//GEN-END:variables
 
     private String addFriend(String username) {
 
         String in = "Add Friend\n" + myusername + "\n" + mypwd + "\n" + username + "\n";
-        if (username.isEmpty()) {return "Please enter friend's username";}
+        if (username.isEmpty()) {
+            return "Please enter friend's username";
+        }
         String out = Login.sendRequest(in);
         if (out == null) {
             return "Couldn't Connect to Auth Server";

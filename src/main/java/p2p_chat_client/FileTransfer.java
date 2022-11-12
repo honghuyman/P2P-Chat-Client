@@ -28,7 +28,7 @@ public class FileTransfer extends javax.swing.JFrame {
                         ObjectInputStream in = new ObjectInputStream(s.getInputStream());
                         while (true) {
                             FileData file = (FileData) in.readObject();
-                            receiveFile(file);
+                            saveFile(file);
                         }
                     } catch (Exception e) {
                     }
@@ -40,7 +40,7 @@ public class FileTransfer extends javax.swing.JFrame {
         }
     }
 
-    public void receiveFile(FileData data) {
+    public void saveFile(FileData data) {
         int dialogButton = JOptionPane.YES_NO_OPTION;
         int option = JOptionPane.showConfirmDialog(null, data.getSender() + " sent you a file. Do you want to save?", "File Transfer", dialogButton);
         if (option == JOptionPane.YES_OPTION) {
@@ -49,7 +49,7 @@ public class FileTransfer extends javax.swing.JFrame {
             int c = ch.showSaveDialog(null);
             if (c == JFileChooser.APPROVE_OPTION) {
                 try {
-                    try (FileOutputStream out = new FileOutputStream(ch.getSelectedFile())) {
+                    try ( FileOutputStream out = new FileOutputStream(ch.getSelectedFile())) {
                         out.write(data.getFile());
                     }
                 } catch (Exception e) {
@@ -61,13 +61,9 @@ public class FileTransfer extends javax.swing.JFrame {
 
     public static void sendFile(String serverIP, String myname) {
         try {
-            Socket socket = new Socket(serverIP, PORT);
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-
             JFileChooser ch = new JFileChooser();
             int c = ch.showOpenDialog(null);
             if (c == JFileChooser.APPROVE_OPTION) {
-                ch.setVisible(true);
                 File f = ch.getSelectedFile();
                 FileInputStream in = new FileInputStream(f);
                 byte b[] = new byte[in.available()];
@@ -76,6 +72,9 @@ public class FileTransfer extends javax.swing.JFrame {
                 data.setName(f.getName());
                 data.setFile(b);
                 data.setSender(myname);
+                
+                Socket socket = new Socket(serverIP, PORT);
+                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 out.writeObject(data);
                 out.flush();
             }
