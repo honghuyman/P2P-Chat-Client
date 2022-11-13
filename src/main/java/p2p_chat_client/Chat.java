@@ -39,7 +39,7 @@ public class Chat {
 
     public void sendFile() {
         String ip = ((InetSocketAddress) socket.getRemoteSocketAddress()).getAddress().toString().substring(1);
-        FileTransfer.sendFile(ip, myname);
+        new Thread(()-> {FileTransfer.sendFile(ip, myname);}).start();
     }
 
     public boolean start() {
