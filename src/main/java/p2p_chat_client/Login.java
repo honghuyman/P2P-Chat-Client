@@ -10,7 +10,7 @@ import java.net.Socket;
 
 public class Login extends javax.swing.JFrame {
 
-    public static String AUTH_SERVER = "26.72.244.236";
+    public static String AUTH_SERVER = "localhost"; // Your designed IP address for the server
     public static int AUTH_SERVER_PORT = 8585;
 
     /**
